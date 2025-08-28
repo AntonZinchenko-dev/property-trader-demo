@@ -1,0 +1,56 @@
+html,
+body,
+#root {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+}
+
+canvas {
+    outline: none;
+}
+
+.ui-overlay {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 24px;
+}
+
+.ui-card {
+    pointer-events: auto;
+    background: rgba(20, 20, 28, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 12px 14px;
+    backdrop-filter: blur(6px);
+    color: #e8e8f0;
+    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, 'Inter', Arial;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.ui-btn {
+    background: #5865f2;
+    border: none;
+    color: white;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.ui-btn[disabled] {
+    opacity: .6;
+    cursor: not-allowed;
+}
+
+.ui-chip {
+    font-size: 12px;
+    opacity: .9;
+}
