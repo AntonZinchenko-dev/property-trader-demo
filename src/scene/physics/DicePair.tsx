@@ -9,6 +9,7 @@ export function DicePair() {
   const setDiceThrow = useGame(s => s.setDiceThrow)
   const setLastDice  = useGame(s => s.setLastDice)
   const setDiceReady = useGame(s => s.setDiceReady)
+  const diceReady = useGame(s => s.diceReady)
 
   const d1 = useRef<null | (() => Promise<number>)>(null)
   const d2 = useRef<null | (() => Promise<number>)>(null)
@@ -30,6 +31,15 @@ export function DicePair() {
     }
     tryMarkReady()
   }, [setDiceReady])
+
+  // После reset флаг diceReady может стать false, хотя колбэки костей уже живы.
+  // В этом случае сразу возвращаем готовность, чтобы кнопка броска не зависала.
+  useEffect(() => {
+    if (!diceReady && d1.current && d2.current) {
+      setDiceReady(true)
+      readyRef.current?.r()
+    }
+  }, [diceReady, setDiceReady])
 
   useEffect(() => {
     const throwBoth = async () => {
