@@ -189,10 +189,21 @@ export const useGame = create<GameState>((set, get) => ({
     }
 
     else if (card.effect.kind === 'move_to') {
-      const steps = moveStepsForward(me.tile, card.effect.tile)
-      await get().movePlayerBy(active, steps)
-      set({ pendingAction: undefined })
-      logs.push({ text: `${me.name}: переместился на ${card.effect.tile}`, ts: Date.now() })
+      if (card.effect.tile === TILE.START) {
+        // Карта "на GO" не должна анимировать полный круг по всем клеткам.
+        players[active] = { ...me, tile: TILE.START, money: me.money + 200 }
+        set({
+          players: [...players],
+          focusTile: TILE.START,
+          pendingAction: undefined,
+        })
+        logs.push({ text: `${me.name}: переместился на GO и получил $200`, ts: Date.now() })
+      } else {
+        const steps = moveStepsForward(me.tile, card.effect.tile)
+        await get().movePlayerBy(active, steps)
+        set({ pendingAction: undefined })
+        logs.push({ text: `${me.name}: переместился на ${card.effect.tile}`, ts: Date.now() })
+      }
 
       const eff2 = applyTileEffect(players[active].tile)
       if (eff2.moneyDelta) {
