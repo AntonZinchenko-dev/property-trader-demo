@@ -5,6 +5,8 @@ import { a, useSpring } from '@react-spring/three'
 import { useGame } from '../game/store.ts'
 import { tileToVec3 } from '../game/boardLayout.ts'
 
+const PIECE_Y = 0.25
+
 export function Piece({ playerIndex, color }:{ playerIndex:number; color:string }) {
   const tile = useGame(s => s.players[playerIndex].tile)
   const setFocus = useGame(s => s.setFocus)
@@ -13,15 +15,20 @@ export function Piece({ playerIndex, color }:{ playerIndex:number; color:string 
   const darkColor = useMemo(() => baseColor.clone().multiplyScalar(0.65), [baseColor])
   const lightColor = useMemo(() => baseColor.clone().lerp(new THREE.Color('#ffffff'), 0.35), [baseColor])
 
-  const { position } = useSpring({
-    to: { position: [v.x, 0.4, v.z] as [number, number, number] },
-    // clamp убирает обратный "перелёт" в начале шага
-    config: { tension: 180, friction: 28, clamp: true },
-  })
+  const [{ position }, api] = useSpring(() => ({
+    position: [v.x, PIECE_Y, v.z] as [number, number, number],
+    config: { mass: 1, tension: 260, friction: 34, clamp: true, precision: 0.0001 },
+  }))
 
   useEffect(() => {
-    setFocus({ x: v.x, y: 0.4, z: v.z })
-  }, [tile])
+    api.start({
+      to: { position: [v.x, PIECE_Y, v.z] as [number, number, number] },
+    })
+  }, [v.x, v.z, api])
+
+  useEffect(() => {
+    setFocus({ x: v.x, y: PIECE_Y, z: v.z })
+  }, [tile, v.x, v.z, setFocus])
 
   return (
     <a.group position={position}>

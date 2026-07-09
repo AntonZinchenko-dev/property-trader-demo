@@ -10,7 +10,7 @@ import { DicePair } from './physics/DicePair.tsx'
 export function Scene() {
   return (
     <>
-      <fog attach="fog" args={['#2a2d3b', 12, 30]} />
+      <fog attach="fog" args={['#2a2d3b', 48, 120]} />
       <ambientLight intensity={0.45} />
       <hemisphereLight intensity={0.5} color="#dbe6ff" groundColor="#242635" />
       <directionalLight
