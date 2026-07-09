@@ -2,7 +2,8 @@ import { Vector3 } from 'three'
 
 export const TILES: [number, number, number][] = (() => {
   const pts: [number, number, number][] = []
-  const N = 10, s = 1.2 // размер шага клетки
+  // Monopoly loop has 40 cells => 4 * (N - 1) = 40 => N = 11
+  const N = 11, s = 1.2 // размер шага клетки
   const base = -s*(N-1)/2
   for (let i=0;i<N;i++) pts.push([base+i*s, 0, base + (N-1)*s])       // низ слева->вправо
   for (let i=1;i<N;i++) pts.push([base + (N-1)*s, 0, base + (N-1-i)*s]) // право низ->верх
