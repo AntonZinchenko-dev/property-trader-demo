@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react'
 import { useGame } from '../game/store.ts'
 import { getPropertyByTile } from '../game/rules.ts'
 import { PurchaseModal } from './PurchaseModal.tsx'
-import { CardModal } from './CardModal.tsx'
 import { GameOverModal } from './GameOverModal.tsx'
 
 const BOT_INDEX = 1
@@ -188,7 +187,6 @@ export function UIOverlay() {
       </div>
 
       <PurchaseModal />
-      <CardModal />
       <GameOverModal
         open={gameOver}
         players={players}

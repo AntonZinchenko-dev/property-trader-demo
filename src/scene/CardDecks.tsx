@@ -3,6 +3,7 @@ import { a, useSpring } from '@react-spring/three'
 import { useEffect, useMemo } from 'react'
 import * as THREE from 'three'
 import { Vector3 } from 'three'
+import { useThree } from '@react-three/fiber'
 import type { CardEffect } from '../game/cards.ts'
 import { tileToVec3 } from '../game/boardLayout.ts'
 import { useGame } from '../game/store.ts'
@@ -34,6 +35,8 @@ function effectGlow(effect?: CardEffect) {
 function DeckStack({ source, active }: { source: DeckSource; active: boolean }) {
   const [x, y, z] = deckPos(source)
   const cardColor = source === 'CHANCE' ? '#7e6bff' : '#5cb4ff'
+  const deckBaseColor = source === 'CHANCE' ? '#2c246f' : '#1f5f95'
+  const deckEdgeColor = source === 'CHANCE' ? '#16193a' : '#17334d'
   const [{ lift, rz }, api] = useSpring(() => ({
     lift: 0,
     rz: source === 'CHANCE' ? 0.12 : -0.12,
@@ -55,7 +58,19 @@ function DeckStack({ source, active }: { source: DeckSource; active: boolean }) 
       </mesh>
       <mesh position={[0, 0, DECK_THICKNESS * 0.5]}>
         <boxGeometry args={[CARD_W, CARD_H, DECK_THICKNESS]} />
-        <meshStandardMaterial color="#f4f7ff" roughness={0.85} metalness={0.02} />
+        <meshStandardMaterial color={deckEdgeColor} roughness={0.8} metalness={0.08} />
+      </mesh>
+      <mesh position={[0, 0, DECK_THICKNESS * 0.582]}>
+        <planeGeometry args={[CARD_W * 0.96, CARD_H * 0.96]} />
+        <meshBasicMaterial color={deckBaseColor} />
+      </mesh>
+      <mesh position={[0, 0, DECK_THICKNESS * 0.583]}>
+        <ringGeometry args={[0.18, 0.33, 32]} />
+        <meshBasicMaterial color={cardColor} transparent opacity={0.42} />
+      </mesh>
+      <mesh position={[0, 0, DECK_THICKNESS * 0.584]}>
+        <planeGeometry args={[CARD_W * 0.5, CARD_H * 0.12]} />
+        <meshBasicMaterial color={cardColor} transparent opacity={0.9} />
       </mesh>
       <mesh position={[0, CARD_H * 0.33, DECK_THICKNESS * 0.57]}>
         <planeGeometry args={[CARD_W * 0.75, CARD_H * 0.2]} />
@@ -76,7 +91,9 @@ function DeckStack({ source, active }: { source: DeckSource; active: boolean }) 
 }
 
 export function CardDecks() {
+  const { camera } = useThree()
   const pending = useGame(s => s.pendingAction)
+  const resolveCard = useGame(s => s.resolveCard)
   const open = pending?.type === 'CARD'
   const source: DeckSource = open ? pending.source : 'CHANCE'
   const title = open ? pending.card.title : ''
@@ -103,6 +120,10 @@ export function CardDecks() {
   useEffect(() => {
     if (open) {
       const [sx, sy, sz] = deckPos(source)
+      const dir = new Vector3()
+      camera.getWorldDirection(dir)
+      const cardTarget = camera.position.clone().add(dir.multiplyScalar(4.5))
+      cardTarget.y -= 0.15
       flipApi.start({ fy: Math.PI, glow: 0 })
       api.start({
         from: {
@@ -114,11 +135,11 @@ export function CardDecks() {
           opacity: 0.2,
         },
         to: {
-          pos: [0, 0.26, 0.15] as [number, number, number],
-          rx: -1.1,
+          pos: [cardTarget.x, cardTarget.y, cardTarget.z] as [number, number, number],
+          rx: -0.18,
           ry: 0,
           rz: 0,
-          scale: 1,
+          scale: 1.18,
           opacity: 1,
         },
       })
@@ -151,7 +172,7 @@ export function CardDecks() {
 
       <a.group position={pos} rotation-x={rx} rotation-y={ry} rotation-z={rz} scale={scale}>
         <a.group rotation-y={fy}>
-          <mesh>
+          <mesh onClick={() => resolveCard()}>
             <boxGeometry args={[CARD_W, CARD_H, 0.04]} />
             <a.meshStandardMaterial color="#f9fbff" roughness={0.55} metalness={0.08} transparent opacity={opacity} />
           </mesh>
@@ -198,6 +219,15 @@ export function CardDecks() {
               >
                 {text}
               </Text>
+              <Text
+                position={[0, -0.5, 0.024]}
+                color="#2f3a50"
+                fontSize={0.05}
+                anchorX="center"
+                anchorY="middle"
+              >
+                click card to close
+              </Text>
             </>
           )}
 
@@ -238,9 +268,9 @@ export function CardDecks() {
 
       {open && (
         <Text
-          position={[0, 0.92, 0.15]}
+          position={[camera.position.x, camera.position.y + 0.85, camera.position.z - 3.8]}
           color="#f0f5ff"
-          fontSize={0.16}
+          fontSize={0.18}
           maxWidth={4.5}
           textAlign="center"
           anchorX="center"
