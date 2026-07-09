@@ -1,4 +1,4 @@
-import { ContactShadows, Environment, Sparkles, Stars } from '@react-three/drei'
+import { ContactShadows, Sparkles, Stars } from '@react-three/drei'
 import { Physics } from '@react-three/cannon'
 import { Board } from './Board.tsx'
 import { CameraRig } from './CameraRig.tsx'
@@ -29,9 +29,8 @@ export function Scene() {
       <pointLight position={[-6, 3, -6]} intensity={1.7} distance={26} color="#7f8cff" />
       <pointLight position={[6, 3, 6]} intensity={1.08} distance={22} color="#ff8a66" />
       <pointLight position={[0, 2.6, 0]} intensity={1.1} distance={14} color="#7fd6ff" />
-      <Sparkles count={120} speed={0.36} size={2.4} scale={[22, 8, 22]} color="#b8c8ff" />
-      <Stars radius={90} depth={36} count={2000} factor={4.5} saturation={0} fade speed={0.55} />
-      <Environment preset="city" />
+      <Sparkles count={48} speed={0.24} size={1.9} scale={[18, 6, 18]} color="#b8c8ff" />
+      <Stars radius={70} depth={28} count={900} factor={3.2} saturation={0} fade speed={0.35} />
 
       <Physics
         gravity={[0, -9.81, 0]}
@@ -46,7 +45,7 @@ export function Scene() {
         <Piece playerIndex={1} color="#ff7a66" />
         <DicePair />
       </Physics>
-      <ContactShadows position={[0, -0.045, 0]} opacity={0.55} blur={2.9} scale={21} far={18} />
+      <ContactShadows position={[0, -0.045, 0]} opacity={0.35} blur={1.8} scale={18} far={14} />
 
       <CameraRig />
     </>

@@ -16,7 +16,7 @@ export default function App() {
     <div className="app-shell">
       <div className="app-glow app-glow-a" />
       <div className="app-glow app-glow-b" />
-      <Canvas dpr={[1, 1.5]} shadows camera={{ position: [8, 10, 12], fov: 45 }} gl={{ antialias: true, powerPreference: 'high-performance' }}>
+      <Canvas dpr={[1, 1.25]} shadows camera={{ position: [8, 10, 12], fov: 45 }} gl={{ antialias: true, powerPreference: 'high-performance' }}>
         <color attach="background" args={['#131722']} />
         <Scene />
       </Canvas>

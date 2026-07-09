@@ -15,16 +15,16 @@ export function Board() {
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.16, 0]} receiveShadow>
         <planeGeometry args={[32, 32]} />
         <MeshReflectorMaterial
-          blur={[520, 110]}
-          resolution={1024}
-          mixBlur={0.8}
-          mixStrength={24}
-          roughness={0.76}
+          blur={[220, 48]}
+          resolution={256}
+          mixBlur={0.5}
+          mixStrength={10}
+          roughness={0.82}
           depthScale={0.15}
           minDepthThreshold={0.4}
           maxDepthThreshold={1.4}
           color="#121a29"
-          metalness={0.24}
+          metalness={0.16}
         />
       </mesh>
 
