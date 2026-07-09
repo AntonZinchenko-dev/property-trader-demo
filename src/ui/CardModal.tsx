@@ -8,12 +8,12 @@ export function CardModal() {
   const open = pending?.type === 'CARD'
   if (!open) return null
 
-  const { card } = pending
+  const { card, source } = pending
 
   return (
     <Modal
       open
-      title={`Chance: ${card.title}`}
+      title={`${source}: ${card.title}`}
       onClose={() => resolve()}  
       footer={
         <button

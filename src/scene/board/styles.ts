@@ -36,22 +36,88 @@ function specialStyle(label: string, sublabel: string, bg: string, bandColor: st
 }
 
 export function styleByIndex(i: number): TileStyle {
-  if (i === 0) return specialStyle('START', '+200', '#1f3d35', '#3fd07c', 'diagonal')
-  if (i === 10) return specialStyle('JAIL', 'VISIT', '#3f2f21', '#c78b4a', 'diagonal')
-  if (i === 20) return specialStyle('FREE', 'PARK', '#203845', '#4cb2de', 'dots')
-  if (i === 30) return specialStyle('GO TO', 'JAIL', '#4a2228', '#de5a66', 'diagonal')
+  const titleByIndex: Record<number, string> = {
+    0: 'GO',
+    1: 'MEDIT',
+    2: 'CHEST',
+    3: 'BALTIC',
+    4: 'TAX',
+    5: 'READING',
+    6: 'ORIENTAL',
+    7: 'CHANCE',
+    8: 'VERMONT',
+    9: 'CONNECT',
+    10: 'JAIL',
+    11: 'CHARLES',
+    12: 'ELECTRIC',
+    13: 'STATES',
+    14: 'VIRGINIA',
+    15: 'PENN RR',
+    16: 'JAMES',
+    17: 'CHEST',
+    18: 'TENNES',
+    19: 'NEW YORK',
+    20: 'FREE',
+    21: 'KENTUCKY',
+    22: 'CHANCE',
+    23: 'INDIANA',
+    24: 'ILLINOIS',
+    25: 'B&O RR',
+    26: 'ATLANTIC',
+    27: 'VENTNOR',
+    28: 'WATER',
+    29: 'MARVIN',
+    30: 'GO TO',
+    31: 'PACIFIC',
+    32: 'N.CAROL',
+    33: 'CHEST',
+    34: 'PENN AV',
+    35: 'SHORT LN',
+    36: 'CHANCE',
+    37: 'PARK',
+    38: 'LUX TAX',
+    39: 'BOARDWK',
+  }
+  const priceByTile: Record<number, string> = {
+    1: '$60', 3: '$60',
+    6: '$100', 8: '$100', 9: '$120',
+    11: '$140', 13: '$140', 14: '$160',
+    16: '$180', 18: '$180', 19: '$200',
+    21: '$220', 23: '$220', 24: '$240',
+    26: '$260', 27: '$260', 29: '$280',
+    31: '$300', 32: '$300', 34: '$320',
+    37: '$350', 39: '$400',
+  }
+
+  if (i === 0) return { ...specialStyle('GO', '+$200', '#1f3d35', '#3fd07c', 'diagonal'), icon: 'start' }
+  if (i === 10) return { ...specialStyle('JAIL', 'JUST VISIT', '#3f2f21', '#c78b4a', 'diagonal'), icon: 'jail' }
+  if (i === 20) return { ...specialStyle('FREE', 'PARKING', '#203845', '#4cb2de', 'dots'), icon: 'park' }
+  if (i === 30) return { ...specialStyle('GO TO', 'JAIL', '#4a2228', '#de5a66', 'diagonal'), icon: 'gotojail' }
 
   if (CHANCE_TILES.has(i)) {
-    return specialStyle('CHANCE', `T${i}`, '#322659', '#9e86ff', 'dots')
+    return { ...specialStyle('CHANCE', 'DRAW CARD', '#322659', '#9e86ff', 'dots'), icon: 'chance' }
   }
   if (TAX_TILES.has(i)) {
-    return specialStyle('TAX', `T${i}`, '#4b2529', '#ff7070', 'diagonal')
+    return { ...specialStyle('TAX', i === 4 ? '$200' : '$100', '#4b2529', '#ff7070', 'diagonal'), icon: 'tax' }
   }
   if (RAIL_TILES.has(i)) {
-    return specialStyle('RAIL', `T${i}`, '#263749', '#a6bdd4', 'diagonal')
+    return { ...specialStyle(titleByIndex[i] ?? 'RAIL', '$200', '#263749', '#a6bdd4', 'diagonal'), icon: 'rail' }
   }
   if (UTILITY_TILES.has(i)) {
-    return specialStyle('UTIL', `T${i}`, '#224546', '#67d0c2', 'dots')
+    return { ...specialStyle(titleByIndex[i] ?? 'UTILITY', '$150', '#224546', '#67d0c2', 'dots'), icon: 'utility' }
+  }
+
+  if (i === 2 || i === 17 || i === 33) {
+    return {
+      bg: '#273047',
+      border: '#1f2430',
+      label: titleByIndex[i] ?? 'CHEST',
+      sublabel: 'BONUS',
+      labelColor: '#edf2ff',
+      bandColor: '#86a7ff',
+      pattern: 'dots',
+      icon: 'chest',
+    }
   }
 
   const group = groupByTile.get(i)
@@ -59,21 +125,23 @@ export function styleByIndex(i: number): TileStyle {
     return {
       bg: '#293347',
       border: '#1f2430',
-      label: `T${i}`,
-      sublabel: group.name,
+      label: titleByIndex[i] ?? `T${i}`,
+      sublabel: priceByTile[i] ?? group.name,
       labelColor: '#edf2ff',
       bandColor: group.color,
       pattern: 'none',
+      icon: 'property',
     }
   }
 
   return {
     bg: '#2c3242',
     border: '#1f2430',
-    label: `T${i}`,
+    label: titleByIndex[i] ?? `T${i}`,
     sublabel: 'EVENT',
     labelColor: '#e2e9fb',
     bandColor: '#6f7d99',
     pattern: 'none',
+    icon: 'chance',
   }
 }

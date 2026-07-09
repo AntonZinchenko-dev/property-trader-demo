@@ -1,8 +1,8 @@
 // src/game/store.ts
 import { create } from 'zustand'
-import { applyTileEffect, TILE, getPropertyByTile, isPropertyTile } from './rules.ts'
+import { applyTileEffect, TILE, getPropertyByTile, isPropertyTile, RAIL_TILES, UTILITY_TILES } from './rules.ts'
 import type { Card } from './cards.ts'
-import { CHANCE_DECK, shuffle } from './cards.ts'
+import { CHANCE_DECK, CHEST_DECK, shuffle } from './cards.ts'
 
 type Player = {
   id: string
@@ -34,6 +34,7 @@ type PendingAction =
   | {
       type: 'CARD'
       card: Card
+      source: 'CHANCE' | 'CHEST'
       isDouble: boolean
     }
 
@@ -50,6 +51,7 @@ type GameState = {
 
   // Chance
   chanceDeck: Card[]
+  chestDeck: Card[]
   resolveCard: () => Promise<void>
 
   // Собственность
@@ -84,6 +86,45 @@ const resetDoubles = (players: Player[], playerIndex: number) => {
   players[playerIndex] = { ...p, doublesCount: 0 }
 }
 
+const drawFromDeck = (deck: Card[], source: Card[]) => {
+  const [card, ...rest] = deck.length ? deck : shuffle(source)
+  const nextDeck = rest.length ? rest : shuffle(source)
+  return { card, nextDeck }
+}
+
+const countOwnedBySet = (
+  ownership: Record<number, Ownership | undefined>,
+  ownerIndex: number,
+  tileSet: Set<number>,
+) => {
+  let count = 0
+  for (const tile of tileSet) {
+    const own = ownership[tile]
+    if (own && own.ownerIndex === ownerIndex && !own.mortgaged) count += 1
+  }
+  return count
+}
+
+const calcRent = (
+  tile: number,
+  baseRent: number,
+  ownership: Record<number, Ownership | undefined>,
+  ownerIndex: number,
+  diceTotal?: number,
+) => {
+  if (RAIL_TILES.has(tile)) {
+    const railCount = countOwnedBySet(ownership, ownerIndex, RAIL_TILES)
+    return [25, 50, 100, 200][Math.max(0, railCount - 1)] ?? 25
+  }
+  if (UTILITY_TILES.has(tile)) {
+    const utilCount = countOwnedBySet(ownership, ownerIndex, UTILITY_TILES)
+    const mult = utilCount >= 2 ? 10 : 4
+    const roll = diceTotal && diceTotal > 0 ? diceTotal : 7
+    return mult * roll
+  }
+  return baseRent
+}
+
 export const useGame = create<GameState>((set, get) => ({
   players: [
     { id: 'p1', name: 'Player 1', tile: 0, money: 1500, jailTurns: 0, doublesCount: 0 },
@@ -102,6 +143,7 @@ export const useGame = create<GameState>((set, get) => ({
 
   // колода Chance
   chanceDeck: shuffle(CHANCE_DECK),
+  chestDeck: shuffle(CHEST_DECK),
 
   setDiceThrow: (fn) => set({ diceThrow: fn }),
   setLastDice: (vals) => set({ lastDice: vals }),
@@ -184,12 +226,32 @@ export const useGame = create<GameState>((set, get) => ({
           })
           return
         } else if (own.ownerIndex !== active && !own.mortgaged) {
-          const rent = property.rent
+          const [d1, d2] = get().lastDice
+          const rent = calcRent(property.tile, property.rent, get().ownership, own.ownerIndex, (d1 ?? 0) + (d2 ?? 0))
           players[active].money -= rent
           players[own.ownerIndex].money += rent
           logs.push({ text: `${me.name}: аренда $${rent} игроку ${players[own.ownerIndex].name}`, ts: Date.now() })
           set({ players: [...players] })
         }
+      }
+
+      if (eff2.draw) {
+        if (eff2.draw === 'CHANCE') {
+          const { card: nextCard, nextDeck } = drawFromDeck(get().chanceDeck, CHANCE_DECK)
+          set({
+            pendingAction: { type: 'CARD', card: nextCard, source: 'CHANCE', isDouble },
+            chanceDeck: nextDeck,
+            log: [...get().log, ...logs, { text: `${me.name}: тянет карту Chance`, ts: Date.now() }],
+          })
+          return
+        }
+        const { card: nextCard, nextDeck } = drawFromDeck(get().chestDeck, CHEST_DECK)
+        set({
+          pendingAction: { type: 'CARD', card: nextCard, source: 'CHEST', isDouble },
+          chestDeck: nextDeck,
+          log: [...get().log, ...logs, { text: `${me.name}: тянет карту Chest`, ts: Date.now() }],
+        })
+        return
       }
       set({ log: [...get().log, ...logs] })
     }
@@ -307,14 +369,22 @@ export const useGame = create<GameState>((set, get) => ({
       return
     }
 
-    // тянем карту Chance
-    if (eff.draw === 'CHANCE') {
-      const deck = get().chanceDeck
-      const [card, ...rest] = deck.length ? deck : shuffle(CHANCE_DECK)
+    if (eff.draw) {
+      if (eff.draw === 'CHANCE') {
+        const { card, nextDeck } = drawFromDeck(get().chanceDeck, CHANCE_DECK)
+        set({
+          pendingAction: { type: 'CARD', card, source: 'CHANCE', isDouble },
+          chanceDeck: nextDeck,
+          log: [...get().log, ...logs, { text: `${me.name}: тянет карту Chance`, ts: Date.now() }],
+          rolling: false,
+        })
+        return
+      }
+      const { card, nextDeck } = drawFromDeck(get().chestDeck, CHEST_DECK)
       set({
-        pendingAction: { type: 'CARD', card, isDouble },
-        chanceDeck: rest.length ? rest : shuffle(CHANCE_DECK),
-        log: [...get().log, ...logs, { text: `${me.name}: тянет карту Chance`, ts: Date.now() }],
+        pendingAction: { type: 'CARD', card, source: 'CHEST', isDouble },
+        chestDeck: nextDeck,
+        log: [...get().log, ...logs, { text: `${me.name}: тянет карту Chest`, ts: Date.now() }],
         rolling: false,
       })
       return
@@ -342,7 +412,7 @@ export const useGame = create<GameState>((set, get) => ({
       }
 
       if (own.ownerIndex !== active && !own.mortgaged) {
-        const rent = property.rent
+        const rent = calcRent(property.tile, property.rent, get().ownership, own.ownerIndex, total)
         players[active].money -= rent
         players[own.ownerIndex].money += rent
         logs.push({ text: `${me.name}: аренда $${rent} игроку ${players[own.ownerIndex].name}`, ts: Date.now() })
@@ -495,5 +565,6 @@ export const useGame = create<GameState>((set, get) => ({
       pendingAction: undefined,
       diceReady: false,
       chanceDeck: shuffle(CHANCE_DECK),
+      chestDeck: shuffle(CHEST_DECK),
     }),
 }))

@@ -4,6 +4,7 @@ import { Board } from './Board.tsx'
 import { CameraRig } from './CameraRig.tsx'
 import { Piece } from './Piece.tsx'
 import { ActiveRing } from './ActiveRing.tsx'
+import { CardDecks } from './CardDecks.tsx'
 import { Ground } from './physics/Ground.tsx'
 import { DicePair } from './physics/DicePair.tsx'
 
@@ -40,6 +41,7 @@ export function Scene() {
       >
         <Ground />
         <Board />
+        <CardDecks />
         <ActiveRing />
         <Piece playerIndex={0} color="#9c6bff" />
         <Piece playerIndex={1} color="#ff7a66" />

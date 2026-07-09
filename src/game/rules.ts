@@ -10,13 +10,16 @@ export const TILE = {
 
 export const TAX_TILES = new Set([4, 38])
 export const CHANCE_TILES = new Set([7, 22, 36])
+export const CHEST_TILES = new Set([2, 17, 33])
+export const RAIL_TILES = new Set([5, 15, 25, 35])
+export const UTILITY_TILES = new Set([12, 28])
 
 export type TileEffectResult = {
   sentToJail?: boolean
   moneyDelta?: number
   log?: string
   maybePurchasable?: boolean
-  draw?: 'CHANCE'  // НОВОЕ: тянуть карту шанс
+  draw?: 'CHANCE' | 'CHEST'
 }
 
 export function applyTileEffect(tile: number): TileEffectResult {
@@ -26,8 +29,10 @@ export function applyTileEffect(tile: number): TileEffectResult {
   }
 
   if (CHANCE_TILES.has(tile)) {
-    // вместо рандомных ±$ отдаём событие "тянуть карту"
     return { draw: 'CHANCE', log: 'тянет карту Chance' }
+  }
+  if (CHEST_TILES.has(tile)) {
+    return { draw: 'CHEST', log: 'тянет карту Chest' }
   }
 
   if (tile === TILE.GO_TO_JAIL) {
