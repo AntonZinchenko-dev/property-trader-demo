@@ -1,0 +1,4 @@
+Tile icons are from Twemoji.
+Source CDN: https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/
+Project: https://github.com/twitter/twemoji
+License: CC-BY 4.0

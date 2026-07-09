@@ -6,6 +6,7 @@ export type TileStyle = {
   label?: string
   sublabel?: string
   labelColor?: string
+  artSrc?: string
 }
 
 export function makeTileTexture(style: TileStyle, size = 512): THREE.CanvasTexture {
