@@ -23,41 +23,21 @@ export function PurchaseModal() {
       onClose={() => skip()}  // ESC = пропустить покупку
       footer={
         <>
-          <button style={btnGhost} onClick={() => skip()}>Пропустить</button>
-          <button style={{...btn, opacity: canBuy ? 1 : 0.5}} onClick={() => canBuy && buy()}>
+          <button className="ui-btn ui-btn--ghost" onClick={() => skip()}>Пропустить</button>
+          <button className="ui-btn" style={{ opacity: canBuy ? 1 : 0.5 }} onClick={() => canBuy && buy()}>
             Купить за ${p.price}
           </button>
         </>
       }
     >
-      <div style={{display:'grid', gap:8}}>
-        <div><strong>{p.name}</strong></div>
-        <div>Клетка: #{p.tile}</div>
-        <div>Цена: ${p.price}</div>
-        <div>Аренда: ${p.rent}</div>
-        <div>Баланс игрока: ${me.money}</div>
-        {!canBuy && <div style={{color:'#ff8a80'}}>Недостаточно средств</div>}
+      <div className="modal-info-grid">
+        <div className="modal-title"><strong>{p.name}</strong></div>
+        <div className="modal-row">Клетка: #{p.tile}</div>
+        <div className="modal-row">Цена: ${p.price}</div>
+        <div className="modal-row">Аренда: ${p.rent}</div>
+        <div className="modal-row">Баланс игрока: ${me.money}</div>
+        {!canBuy && <div className="modal-error">Недостаточно средств</div>}
       </div>
     </Modal>
   )
-}
-
-const btn: React.CSSProperties = {
-  padding: '10px 14px',
-  background: '#6b8bff',
-  color: '#0b0d13',
-  border: 'none',
-  borderRadius: 10,
-  cursor: 'pointer',
-  fontWeight: 700,
-}
-
-const btnGhost: React.CSSProperties = {
-  padding: '10px 14px',
-  background: 'transparent',
-  color: '#e6e8ef',
-  border: '1px solid #3a3d4b',
-  borderRadius: 10,
-  cursor: 'pointer',
-  fontWeight: 600,
 }

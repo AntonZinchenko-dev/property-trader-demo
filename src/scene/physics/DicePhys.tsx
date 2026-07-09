@@ -1,5 +1,5 @@
 // src/scene/physics/DicePhys.tsx
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useBox } from '@react-three/cannon'
 import * as THREE from 'three'
 import { makeDiceMaterials } from './diceTextures.ts'

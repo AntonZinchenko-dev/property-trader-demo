@@ -11,9 +11,19 @@ export function Board() {
 
   return (
     <group>
-      <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.01, 0]}>
+      <mesh receiveShadow castShadow position={[0, -0.1, 0]}>
+        <boxGeometry args={[16.6, 0.18, 16.6]} />
+        <meshStandardMaterial color="#1f2430" roughness={0.9} metalness={0.05} />
+      </mesh>
+
+      <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.008, 0]}>
         <planeGeometry args={[16, 16]} />
-        <meshStandardMaterial color="#2b2e39" />
+        <meshStandardMaterial color="#2a3040" roughness={0.95} metalness={0.02} />
+      </mesh>
+
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.004, 0]}>
+        <ringGeometry args={[5.95, 6.25, 96]} />
+        <meshStandardMaterial color="#4a5f8a" emissive="#314362" emissiveIntensity={0.3} transparent opacity={0.6} />
       </mesh>
 
       {cells.map(c => {
