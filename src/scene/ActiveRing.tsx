@@ -11,6 +11,8 @@ export function ActiveRing() {
   const activeTile = useGame(s => s.players[s.active]?.tile ?? 0)
   const haloMat = useRef<THREE.MeshBasicMaterial>(null)
   const haloRef = useRef<THREE.Mesh>(null)
+  const coreMat = useRef<THREE.MeshBasicMaterial>(null)
+  const coreRef = useRef<THREE.Mesh>(null)
   const ringColor = PLAYER_COLORS[active] ?? '#8fb1ff'
 
   const p = tileToVec3(activeTile)
@@ -31,7 +33,9 @@ export function ActiveRing() {
 
   useFrame(({ clock }) => {
     const pulse = 0.5 + 0.5 * Math.sin(clock.getElapsedTime() * 4.2)
-    if (haloMat.current) haloMat.current.opacity = 0.16 + pulse * 0.26
+    if (coreMat.current) coreMat.current.opacity = 0.34 + pulse * 0.28
+    if (haloMat.current) haloMat.current.opacity = 0.14 + pulse * 0.24
+    if (coreRef.current) coreRef.current.scale.setScalar(1 + pulse * 0.05)
     if (haloRef.current) haloRef.current.scale.setScalar(1.03 + pulse * 0.12)
   })
 
@@ -42,9 +46,27 @@ export function ActiveRing() {
       scale={scale}
       receiveShadow
     >
+      <mesh ref={coreRef} position={[0, 0.0004, 0]}>
+        <ringGeometry args={[0.58, 0.72, 64]} />
+        <meshBasicMaterial
+          ref={coreMat}
+          color={new THREE.Color(ringColor)}
+          transparent
+          opacity={0.4}
+          blending={THREE.AdditiveBlending}
+          depthWrite={false}
+        />
+      </mesh>
       <mesh ref={haloRef} position={[0, 0.0006, 0]}>
-        <ringGeometry args={[0.64, 0.94, 64]} />
-        <meshBasicMaterial ref={haloMat} color={new THREE.Color(ringColor)} transparent opacity={0.26} />
+        <ringGeometry args={[0.72, 1.02, 72]} />
+        <meshBasicMaterial
+          ref={haloMat}
+          color={new THREE.Color(ringColor)}
+          transparent
+          opacity={0.26}
+          blending={THREE.AdditiveBlending}
+          depthWrite={false}
+        />
       </mesh>
     </a.group>
   )

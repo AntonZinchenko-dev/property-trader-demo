@@ -30,9 +30,9 @@ export function makeTileTexture(style: TileStyle, size = 512): THREE.CanvasTextu
 
   // soft gradient for depth
   const g = ctx.createLinearGradient(0, 0, 0, size)
-  g.addColorStop(0, 'rgba(255,255,255,0.11)')
+  g.addColorStop(0, 'rgba(255,255,255,0.14)')
   g.addColorStop(0.45, 'rgba(255,255,255,0.02)')
-  g.addColorStop(1, 'rgba(0,0,0,0.22)')
+  g.addColorStop(1, 'rgba(0,0,0,0.28)')
   ctx.fillStyle = g
   ctx.fillRect(0, 0, size, size)
 
@@ -74,6 +74,12 @@ export function makeTileTexture(style: TileStyle, size = 512): THREE.CanvasTextu
   ctx.lineWidth = Math.max(2, Math.floor(size * 0.02))
   ctx.strokeRect(ctx.lineWidth / 2, ctx.lineWidth / 2, size - ctx.lineWidth, size - ctx.lineWidth)
 
+  // inner frame to make cells feel less flat
+  ctx.strokeStyle = 'rgba(255,255,255,0.16)'
+  ctx.lineWidth = Math.max(1, Math.floor(size * 0.008))
+  const m = Math.floor(size * 0.08)
+  ctx.strokeRect(m, m, size - m * 2, size - m * 2)
+
   // labels
   if (label) {
     const lines = label.split('\n')
@@ -86,6 +92,21 @@ export function makeTileTexture(style: TileStyle, size = 512): THREE.CanvasTextu
     lines.forEach((line, idx) => {
       ctx.fillText(line, size / 2, startY + idx * lineH)
     })
+  }
+  // text shadow pass
+  if (label) {
+    ctx.globalCompositeOperation = 'multiply'
+    ctx.fillStyle = 'rgba(12,16,28,0.35)'
+    ctx.font = `bold ${Math.floor(size * 0.18)}px system-ui, Arial, sans-serif`
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+    const lines = label.split('\n')
+    const lineH = Math.floor(size * 0.16)
+    const startY = size * 0.54 - ((lines.length - 1) * lineH) / 2
+    lines.forEach((line, idx) => {
+      ctx.fillText(line, size / 2 + 1, startY + idx * lineH + 1)
+    })
+    ctx.globalCompositeOperation = 'source-over'
   }
   if (sublabel) {
     ctx.fillStyle = labelColor

@@ -36,28 +36,28 @@ function specialStyle(label: string, sublabel: string, bg: string, bandColor: st
 }
 
 export function styleByIndex(i: number): TileStyle {
-  if (i === 0) return specialStyle('START', '+200', '#203a2d', '#3fd07c', 'diagonal')
-  if (i === 10) return specialStyle('JAIL', 'VISIT', '#3a2d20', '#c78b4a', 'diagonal')
-  if (i === 20) return specialStyle('FREE', 'PARK', '#20333e', '#4cb2de', 'dots')
-  if (i === 30) return specialStyle('GO TO', 'JAIL', '#402124', '#de5a66', 'diagonal')
+  if (i === 0) return specialStyle('START', '+200', '#1f3d35', '#3fd07c', 'diagonal')
+  if (i === 10) return specialStyle('JAIL', 'VISIT', '#3f2f21', '#c78b4a', 'diagonal')
+  if (i === 20) return specialStyle('FREE', 'PARK', '#203845', '#4cb2de', 'dots')
+  if (i === 30) return specialStyle('GO TO', 'JAIL', '#4a2228', '#de5a66', 'diagonal')
 
   if (CHANCE_TILES.has(i)) {
-    return specialStyle('CHANCE', `T${i}`, '#2c2547', '#9375ff', 'dots')
+    return specialStyle('CHANCE', `T${i}`, '#322659', '#9e86ff', 'dots')
   }
   if (TAX_TILES.has(i)) {
-    return specialStyle('TAX', `T${i}`, '#412326', '#ff7070', 'diagonal')
+    return specialStyle('TAX', `T${i}`, '#4b2529', '#ff7070', 'diagonal')
   }
   if (RAIL_TILES.has(i)) {
-    return specialStyle('RAIL', `T${i}`, '#25313d', '#9bb0c4', 'diagonal')
+    return specialStyle('RAIL', `T${i}`, '#263749', '#a6bdd4', 'diagonal')
   }
   if (UTILITY_TILES.has(i)) {
-    return specialStyle('UTIL', `T${i}`, '#233a3a', '#67d0c2', 'dots')
+    return specialStyle('UTIL', `T${i}`, '#224546', '#67d0c2', 'dots')
   }
 
   const group = groupByTile.get(i)
   if (group) {
     return {
-      bg: '#2a3040',
+      bg: '#293347',
       border: '#1f2430',
       label: `T${i}`,
       sublabel: group.name,
@@ -68,7 +68,7 @@ export function styleByIndex(i: number): TileStyle {
   }
 
   return {
-    bg: '#2a2f3c',
+    bg: '#2c3242',
     border: '#1f2430',
     label: `T${i}`,
     sublabel: 'EVENT',

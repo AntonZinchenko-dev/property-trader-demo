@@ -15,27 +15,27 @@ export function Board() {
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.16, 0]} receiveShadow>
         <planeGeometry args={[32, 32]} />
         <MeshReflectorMaterial
-          blur={[420, 90]}
+          blur={[520, 110]}
           resolution={1024}
-          mixBlur={0.65}
-          mixStrength={18}
-          roughness={0.82}
+          mixBlur={0.8}
+          mixStrength={24}
+          roughness={0.76}
           depthScale={0.15}
           minDepthThreshold={0.4}
           maxDepthThreshold={1.4}
-          color="#151b27"
-          metalness={0.18}
+          color="#121a29"
+          metalness={0.24}
         />
       </mesh>
 
       <mesh receiveShadow castShadow position={[0, -0.1, 0]}>
         <boxGeometry args={[16.6, 0.18, 16.6]} />
-        <meshStandardMaterial color="#1f2430" roughness={0.9} metalness={0.05} />
+        <meshStandardMaterial color="#1d2331" roughness={0.78} metalness={0.2} />
       </mesh>
 
       <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.008, 0]}>
         <planeGeometry args={[16, 16]} />
-        <meshStandardMaterial color="#2a3040" roughness={0.95} metalness={0.02} />
+        <meshStandardMaterial color="#2a3142" roughness={0.82} metalness={0.16} />
       </mesh>
 
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.004, 0]}>
@@ -46,6 +46,11 @@ export function Board() {
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.0036, 0]}>
         <ringGeometry args={[6.35, 6.55, 128]} />
         <meshBasicMaterial color="#7ec4ff" transparent opacity={0.3} />
+      </mesh>
+
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.0031, 0]}>
+        <ringGeometry args={[7.84, 7.94, 144]} />
+        <meshBasicMaterial color="#90b5ff" transparent opacity={0.18} />
       </mesh>
 
       {cells.map(c => {
