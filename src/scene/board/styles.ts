@@ -4,6 +4,7 @@ const palette = ['#3a3f50', '#34384a', '#2e3342', '#40465a']
 
 export function styleByIndex(i: number): TileStyle {
   const bg = palette[i % palette.length]
+  const baseUrl = import.meta.env.BASE_URL
   const label =
     i === 0 ? 'START' :
     i === 10 ? 'JAIL' :
@@ -16,6 +17,6 @@ export function styleByIndex(i: number): TileStyle {
     border: '#202331',
     label,
     labelColor: '#e9edf7',
-    artSrc: `/tiles/tile-${i}.svg`,
+    artSrc: `${baseUrl}tiles/tile-${i}.svg`,
   }
 }

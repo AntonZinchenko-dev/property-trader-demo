@@ -2,6 +2,9 @@ import { useEffect, useRef } from 'react'
 import { useGame } from '../../game/store.ts'
 import { DicePhys } from './DicePhys.tsx'
 
+const sleep = (ms: number) => new Promise<void>(resolve => setTimeout(resolve, ms))
+const rollFallback = () => 1 + Math.floor(Math.random() * 6)
+
 export function DicePair() {
   const setDiceThrow = useGame(s => s.setDiceThrow)
   const setLastDice  = useGame(s => s.setLastDice)
@@ -31,9 +34,15 @@ export function DicePair() {
   useEffect(() => {
     const throwBoth = async () => {
       if (!d1.current || !d2.current) {
-        await readyRef.current?.p
+        await Promise.race([readyRef.current?.p ?? Promise.resolve(), sleep(2200)])
       }
-      if (!d1.current || !d2.current) return 0
+      if (!d1.current || !d2.current) {
+        const v1 = rollFallback()
+        const v2 = rollFallback()
+        setLastDice([v1, v2])
+        setDiceReady(true)
+        return v1 + v2
+      }
 
       const [v1, v2] = await Promise.all([d1.current(), d2.current()])
       setLastDice([v1, v2])
@@ -42,7 +51,7 @@ export function DicePair() {
 
     setDiceThrow(throwBoth)
     return () => setDiceThrow(undefined)
-  }, [setDiceThrow, setLastDice])
+  }, [setDiceThrow, setLastDice, setDiceReady])
 
   return (
     <>
